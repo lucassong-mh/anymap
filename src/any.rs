@@ -12,7 +12,10 @@ pub trait CloneToAny {
 impl<T: Any + Clone> CloneToAny for T {
     #[inline]
     fn clone_to_any(&self) -> Box<dyn CloneAny> {
-        Box::new(self.clone())
+        #[cfg(feature = "linux")]
+        return Box::try_new(self.clone()).unwrap();
+        #[cfg(not(feature = "linux"))]
+        return Box::new(self.clone());
     }
 }
 
@@ -121,7 +124,10 @@ macro_rules! implement {
         impl<T: $any_trait $(+ $auto_traits)*> IntoBox<dyn $any_trait $(+ $auto_traits)*> for T {
             #[inline]
             fn into_box(self) -> Box<dyn $any_trait $(+ $auto_traits)*> {
-                Box::new(self)
+                #[cfg(feature = "linux")]
+                return Box::try_new(self).unwrap();
+                #[cfg(not(feature = "linux"))]
+                return Box::new(self);
             }
         }
     }

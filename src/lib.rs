@@ -21,6 +21,8 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#![feature(allocator_api)]
+
 use core::convert::TryInto;
 use core::hash::Hasher;
 
